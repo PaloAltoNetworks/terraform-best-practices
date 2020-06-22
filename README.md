@@ -22,7 +22,7 @@
 
 ### `2.1 Variables`
 
-* Static values shouldn't be hardcoded inside the Terraform configuration, static values should be defined as Terraform variables, this extend the flexibility of the Terraform nodules for future use.
+* Static values shouldn't be hardcoded inside the Terraform configuration, static values should be defined as Terraform variables, this extends the flexibility of the Terraform nodules for future use.
 
   > BAD Example - All the arguments provided to the `contains` function are hardcoded
 
@@ -52,7 +52,7 @@
 
 ### `2.2 Looping`
 
-* `for_each` looping should be used instead of `count` when multiple resources need to be created. This results in a resource `map` instead of `list` when the created resource are added to the Terraform state tree which allows you to remove an object from Terraform state desptie of the position of the object where it is inserted. Removing an item from the middle of a list will result in Terraform deleting and re-creating the resources.
+* `for_each` looping should be used instead of `count` when multiple resources need to be created. This results in a resource `map` instead of `list` when the created resources are added to the Terraform state tree which allows you to remove an object from Terraform state despite the position of the object where it is inserted. Removing an item from the middle of a list will result in Terraform deleting and re-creating the resources.
 
   > BAD Example - `subnets` is a list of maps and `count` is used to create multiple subnets
 
@@ -105,7 +105,7 @@
 
 ### `2.3 Intuitive Variable Structure`
 
-* It is important to define your variable structure as intuitive as possible for the end user. The input variable can be easily transoformed within the module code to meet your requirement later.
+* It is important to define your variable structure as intuitively as possible for the end user. The input variable can be easily transformed within the module code to meet your requirement later.
 
   > BAD Example - Expect disjointed input variables
 
@@ -115,7 +115,7 @@
         subnet_cidr = ["192.168.0.0/24", "192.168.1.0/24"]
       }
 
-  > GOOD Example 1 - Accept a `list` of maps and transofm the `list` to a `map` inside the module code
+  > GOOD Example 1 - Accept a `list` of maps and transform the `list` to a `map` inside the module code
 
       module "vpc" {
         source = ...
@@ -152,15 +152,15 @@
 > Input variable structure in Good Example 2 is preferred over Example 1 where possible. In this particular case the user is forced to use unique names for the subnets by using subnet name as the key of the object.
 
 
-### `2.4 Segement resource creation between multiple resource`
+### `2.4 Segment resource creation between multiple resource`
 
-* In some cases it does make sense to create Public Cloud components (ie. virtual machines, Load balancers, Routing tables) using multiple Terraform resources to avoid deletion of the entire component upon minor modifications to the object. A few example adding or removal of an interface to an EC2 instance destroys and recreates the entire instance. This could be avoided by splitting the network interface and virtual machine creation between two Terraform resources.
+* In some cases it does make sense to create Public Cloud components (ie. virtual machines, Load balancers, Routing tables) using multiple Terraform resources to avoid deletion of the entire component upon minor modifications to the object. A few examples adding or removal of an interface to an EC2 instance destroys and recreates the entire instance. This could be avoided by splitting the network interface and virtual machine creation between two Terraform resources.
 
   > Example
 
 
       # Input variable 
-      varible "firewall" {
+      variable "firewall" {
         default = {
           "MOJ-AW2-FW01A" = {
             interfaces = [
