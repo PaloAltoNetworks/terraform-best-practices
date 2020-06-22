@@ -4,7 +4,7 @@
 
 ## Table of Contents
 
-1. [Terraform Version](#1-terraform-version)
+1. [Versioning](#1-versioning)
 2. [Coding Practices](#2-coding-practices)
 3. [Tips and Tricks](#3-tips-and-tricks)
 4. [Terraform Module Structure](#4-Terraform-Module-Structure)
@@ -12,11 +12,25 @@
 6. [Terraform Module Testing](#6-Terraform-Module-Testing)
 
 
-## `1. Terraform Version`
+## `1. Versioning`
 
-  >  All terraform configuration should be written using the latest version of the Terraform GA release available (0.12.26 as of writing this guide). 
+### `1.1 Terraform Version`
+* All terraform configuration should be written using the latest version of the Terraform GA release available (0.12.26 as of writing this guide). 
 
   > Existing Terraform modules should be tested against the latest Terraform releases using a test methodology to be defined later. 
+
+### `1.1 Module Version`
+* All terraform modules should be versioned using Git tags. Git tag name should adhere to the following naming convention 
+
+> Major.Minor.Patch => 0.1.0
+
+* Version should be pinned in the root module where the modules are called from using the `ref` argument 
+
+      module "bootstrap_bucket" {
+        source          = "spring.paloaltonetworks.com/mekanayake/terraform-aws-panfw-bootstrap?ref=0.1.0"
+        bucket_prefix   = "GlobalProtect-bootstrap-"
+        local_directory = "vmseries-bootstrap-package"
+      }
 
 ## `2. Coding Practices`
 
@@ -102,6 +116,16 @@
         vpc_id            = aws_vpc.this.id
       }
 
+* `count` should only be used when creating a single resource with a conditional statement. For an example you may decide to create a resource based on an existence of an input variable
+
+  > GOOD Example - `count` to create a single resource with a conditional statement
+
+      resource "aws_iam_role_policy_attachment" "bs-attach" {
+        count      = var.enable_bs ? 1 : 0
+        role       = aws_iam_role.fw-role.name
+        policy_arn = aws_iam_policy.bs-policy[0].arn
+      }
+
 
 ### `2.3 Intuitive Variable Structure`
 
@@ -157,7 +181,6 @@
 * In some cases it does make sense to create Public Cloud components (ie. virtual machines, Load balancers, Routing tables) using multiple Terraform resources to avoid deletion of the entire component upon minor modifications to the object. A few examples adding or removal of an interface to an EC2 instance destroys and recreates the entire instance. This could be avoided by splitting the network interface and virtual machine creation between two Terraform resources.
 
   > Example
-
 
       # Input variable 
       variable "firewall" {
@@ -346,7 +369,9 @@ Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
 
 ## `4. Terraform Module Structure`
 
-> TODO
+### `4.1 Module Template`
+
+* New modules should be created using a predefined Git template
 
 ## `5. Document Generation`
 
