@@ -367,6 +367,30 @@ Reference - https://www.hashicorp.com/blog/hashicorp-terraform-0-12-preview-for-
 Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
 
 
+### `3.3 How to normalise data`
+
+* In certain cases our modules will have to support brownfield deployments, in this case we will have both `resource` and its corresponding `data resource` exist in the terraform configuration. 
+
+  > Example - Support brownfield deployments where Azure `resource_group` already exists. We can use `try` to determine the value for `local.rg` based on the existence of `resource "azurerm_resource_group" "this"` or `data "azurerm_resource_group" "this"`
+
+      resource "azurerm_resource_group" "this" {
+        count    = var.existing_rg == false ? 1 : 0
+        name     = var.resource_group_name
+        location = var.location
+      }
+
+      data "azurerm_resource_group" "this" {
+        count = var.existing_rg == true ? 1 : 0
+        name  = var.resource_group_name
+      }
+
+      locals {
+        rg = try(azurerm_resource_group.this[0], data.azurerm_resource_group.this[0])
+      }
+
+
+Reference - https://www.terraform.io/docs/configuration/functions/try.html
+
 ## `4. Terraform Module Structure`
 
 ### `4.1 Module Template`
