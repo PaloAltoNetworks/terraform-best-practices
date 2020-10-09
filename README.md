@@ -393,9 +393,37 @@ Reference - https://www.terraform.io/docs/configuration/functions/try.html
 
 ## `4. Terraform Module Structure`
 
-### `4.1 Module Template`
+We will maintain one mono repo per cloud provider. Three repos, representing AWS, Azure and GCP, as we kick off our efforts.
 
-* New modules should be created using a predefined Git template
+      ├── README.md <- Documentation explaining the purpose of this mono repo
+      ├── LICENSE.md <- Palo Alto Networks Script Software Agreement
+      ├── modules/
+      │   ├── vpc/
+      │   │   ├── README.md <- Documentation on how to use submodules on its own
+      │   │   ├── variables.tf
+      │   │   ├── main.tf
+      │   │   ├── outputs.tf
+      │   │   ├── versions.tf <- Pin supported terraform provider versions
+      │   ├── vmseries/
+      │   │   ├── README.md
+      │   │   ├── variables.tf
+      │   │   ├── main.tf
+      │   │   ├── outputs.tf
+      │   │   ├── versions.tf
+      ├── examples/ <- Place reference architecture use cases here, subdirectory per use case
+      │   ├── tgw-inbound-inspection/
+      │   │   ├── README.md <- Documentation for specific ref arch use case
+      │   │   ├── variables.tf
+      │   │   ├── main.tf
+      │   │   ├── outputs.tf
+      │   │   ├── versions.tf
+      │   ├── tgw-outbound-inspection/
+
+
+~~### `4.1 Module Template`~~
+
+~~* New modules should be created using a predefined Git template~~
+
 
 ## `5. Document Generation`
 
