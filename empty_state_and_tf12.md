@@ -15,6 +15,12 @@ Thus, the recommendations are (in order):
 
 1. Strong recommendation to **move to Terraform 0.13**.
 1. Alternatively, add `terraform apply --target x` to the workflow (and document it), before the general untargeted `terraform apply` or `terraform plan` commands.
+    - This is exactly the first thing Terraform suggests on version 0.12:
+      > The "for_each" value depends on resource attributes that cannot be determined
+      > until apply, so Terraform cannot predict how many instances will be created.
+      > To work around this, use the -target argument to first apply only the
+      > resources that the for_each depends on.
+
 1. Another possibility, don't use `data` source, instead passing object from a `variable`.
 1. Avoid `merge()` function in the code that is expected to handle `data` sources.
     - This is the last and the least recommended workaround, because
