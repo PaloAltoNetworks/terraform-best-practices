@@ -6,7 +6,6 @@ The problem happens only when **all these are used**:
 
 - Terraform 0.12
 - empty tfstate (or with data missing)
-- command is `terraform plan` or `terraform destroy`
 - `merge()` function
 - `data` source is being fed into `merge`
 
@@ -15,9 +14,9 @@ The problem happens only when **all these are used**:
 Thus, the recommendations are (in order):
 
 1. Strong recommendation to **move to Terraform 0.13**.
-1. Alternatively, add `terraform apply -target x` to the workflow, before executing `terraform plan` or `terraform destroy` commands.
+1. Alternatively, add `terraform apply --target x` to the workflow (and document it), before the general untargeted `terraform apply` or `terraform plan` commands.
 1. Another possibility, don't use `data` source, instead passing object from a `variable`.
-1. Avoid `merge` in the code that is expected to handle `data` objects.
+1. Avoid `merge()` function in the code that is expected to handle `data` objects.
     - This is the last and the least recommended workaround, because
       it leads to constructing overly complicated objects. These decrease readibility and maintainability for all users (even those who would be never impacted by the problem at all!) and moreover the code is hard to spot and remove in future.
 
