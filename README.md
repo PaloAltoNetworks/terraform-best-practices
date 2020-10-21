@@ -390,8 +390,30 @@ Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
         rg = try(azurerm_resource_group.this[0], data.azurerm_resource_group.this[0])
       }
 
+      output "rg" {
+        value = local.rg
+      }
+
 
 Reference - https://www.terraform.io/docs/configuration/functions/try.html
+
+or even simpler:
+
+    resource "azurerm_resource_group" "this" {
+        count    = var.existing_rg == false ? 1 : 0
+        name     = var.resource_group_name
+        location = var.location
+      }
+
+      data "azurerm_resource_group" "this" {
+        name       = var.resource_group_name
+        depends_on = [ azurerm_resource_group.this ]
+      }
+
+      output "rg" {
+        value = data.azurerm_resource_group.this
+      }
+
 
 ## `4. Terraform Module Structure`
 
