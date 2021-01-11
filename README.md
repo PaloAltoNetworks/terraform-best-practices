@@ -41,12 +41,12 @@ All code should support the latest minor version of the latest Terraform GA rele
 
   * BAD example, all the arguments provided to the `contains()` function are hardcoded
 
-        contains(["169.254.0.0/28", "169.254.1.0/28", "169.254.2.0/28", "169.254.3.0/28", "169.254.4.0/28", "169.254.5.0/28", "169.254.169.240/28"], "169.254.1.0/28")
+        contains(["169.254.0.0/28", "169.254.1.0/28", "169.254.2.0/28"], "169.254.1.0/28")
 
   * GOOD example, all the arguments provided to the `contains()` function are extracted and defined as variables
 
         variable "exceptionList" {
-          default = ["169.254.0.0/28", "169.254.1.0/28", "169.254.2.0/28", "169.254.3.0/28", "169.254.4.0/28", "169.254.5.0/28", "169.254.169.240/28"]
+          default = ["169.254.0.0/28", "169.254.1.0/28", "169.254.2.0/28"]
         }
 
         variable "tunnelCidrRange" {
