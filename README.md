@@ -12,14 +12,14 @@
 6. [Terraform Module Testing](#6-Terraform-Module-Testing)
 
 
-## `1. Versioning`
+## 1. Versioning
 
-### `1.1 Terraform Version`
+### 1.1 Terraform Version
 * All terraform configuration should be written using the latest version of the Terraform GA release available (0.12.26 as of writing this guide). 
 
   > Existing Terraform modules should be tested against the latest Terraform releases using a test methodology to be defined later. 
 
-### `1.1 Module Version`
+### 1.1 Module Version
 * All terraform modules should be versioned using Git tags. Git tag name should adhere to the following naming convention 
 
 > Major.Minor.Patch => 0.1.0
@@ -32,9 +32,9 @@
         local_directory = "vmseries-bootstrap-package"
       }
 
-## `2. Coding Practices`
+## 2. Coding Practices
 
-### `2.1 Variables`
+### 2.1 Variables
 
 * Static values shouldn't be hardcoded inside the Terraform configuration, static values should be defined as Terraform variables, this extends the flexibility of the Terraform nodules for future use.
 
@@ -64,7 +64,7 @@
         ipv6_cidr_block = lookup(each.value, "ipv6_cidr_block", null)
       }
 
-### `2.2 Looping`
+### 2.2 Looping
 
 * `for_each` looping should be used instead of `count` when multiple resources need to be created. This results in a resource `map` instead of `list` when the created resources are added to the Terraform state tree which allows you to remove an object from Terraform state despite the position of the object where it is inserted. Removing an item from the middle of a list will result in Terraform deleting and re-creating the resources.
 
@@ -127,7 +127,7 @@
       }
 
 
-### `2.3 Intuitive Variable Structure`
+### 2.3 Intuitive Variable Structure
 
 * It is important to define your variable structure as intuitively as possible for the end user. The input variable can be easily transformed within the module code to meet your requirement later.
 
@@ -176,7 +176,7 @@
 > Input variable structure in Good Example 2 is preferred over Example 1 where possible. In this particular case the user is forced to use unique names for the subnets by using subnet name as the key of the object.
 
 
-### `2.4 Segment resource creation between multiple resource`
+### 2.4 Segment resource creation between multiple resource
 
 * In some cases it does make sense to create Public Cloud components (ie. virtual machines, Load balancers, Routing tables) using multiple Terraform resources to avoid deletion of the entire component upon minor modifications to the object. A few examples adding or removal of an interface to an EC2 instance destroys and recreates the entire instance. This could be avoided by splitting the network interface and virtual machine creation between two Terraform resources.
 
@@ -278,9 +278,9 @@
         tags = { "Name" = each.key }
       }
 
-## `3. Tips and Tricks`
+## 3. Tips and Tricks
 
-### `3.1 Transform lists to maps`
+### 3.1 Transform lists to maps
 
 * `for_each` only accepts type `set` or `map`, therefore you may have to transform lists to maps when creating multiple resources with `for_each`
 
@@ -308,7 +308,7 @@
 Reference - https://www.hashicorp.com/blog/hashicorp-terraform-0-12-preview-for-and-for-each/
 
 
-### `3.2 Flattening nested structures`
+### 3.2 Flattening nested structures
 
 * Sometimes your input data structure isn't naturally in a suitable shape for use in a `for_each` argument, and `flatten` can be a useful helper function when reducing a nested data structure into a flat one.
 
@@ -369,7 +369,7 @@ Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
   > This technique will likely result in a minor problem on Terraform 0.12 (`Invalid for_each argument` in specific situations). The first recommendation is **to use Terraform 0.13**. There is [another less-preferred workaround](empty_state_and_tf12.md) available.
 
 
-### `3.3 How to normalise data`
+### 3.3 How to normalise data
 
 * In certain cases our modules will have to support brownfield deployments, in this case we will have both `resource` and its corresponding `data resource` exist in the terraform configuration. 
 
@@ -393,7 +393,7 @@ Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
 
 Reference - https://www.terraform.io/docs/configuration/functions/try.html
 
-## `4. Terraform Module Structure`
+## 4. Terraform Module Structure
 
 We will maintain one mono repo per cloud provider. Three repos, representing AWS, Azure and GCP, as we kick off our efforts.
 
@@ -422,15 +422,15 @@ We will maintain one mono repo per cloud provider. Three repos, representing AWS
       │   ├── tgw-outbound-inspection/
 
 
-~~### `4.1 Module Template`~~
+~~### 4.1 Module Template~~
 
 ~~* New modules should be created using a predefined Git template~~
 
 
-## `5. Document Generation`
+## 5. Document Generation
 
 > TODO
 
-## `6. Terraform Module Testing`
+## 6. Terraform Module Testing
 
 > TODO
