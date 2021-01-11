@@ -8,8 +8,8 @@ Welcome! This repo contains a set of best practices to be followed when contribu
 2. [Coding Practices](#2-coding-practices)
 3. [Tips and Tricks](#3-tips-and-tricks)
 4. [Terraform Module Structure](#4-Terraform-Module-Structure)
-5. [Document Generation](#5-Document-Generation)
-6. [Terraform Module Testing](#6-Terraform-Module-Testing)
+<!-- TODO 5. [Document Generation](#5-Document-Generation) -->
+<!-- TODO 6. [Terraform Module Testing](#6-Terraform-Module-Testing) -->
 
 ## 1. Versioning
 
@@ -17,7 +17,7 @@ Welcome! This repo contains a set of best practices to be followed when contribu
 
 * All terraform configuration should be written using the latest version of the Terraform GA release available (0.12.26 as of writing this guide).
 
-  > Existing Terraform modules should be tested against the latest Terraform releases using a test methodology to be defined later.
+<!-- TODO All code should work with the latest three(?) major Terraform releases, requiring all the critical tests to pass as specified in the [Testing](#6-Terraform-Module-Testing) section. Workarounds, if needed, are allowed if they are clearly documented. -->
 
 ### 1.1 Module Version
 
@@ -416,14 +416,6 @@ We will maintain one mono repo per cloud provider. Three repos, representing AWS
       │   │   ├── versions.tf
       │   ├── tgw-outbound-inspection/
 
-~~### 4.1 Module Template~~
+<!-- ## 5. Document Generation -->
 
-~~* New modules should be created using a predefined Git template~~
-
-## 5. Document Generation
-
-> TODO
-
-## 6. Terraform Module Testing
-
-> TODO
+<!-- ## 6. Terraform Module Testing -->
