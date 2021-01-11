@@ -60,8 +60,8 @@ All code should support the latest minor version of the latest Terraform GA rele
   * GOOD example, `ipv6_cidr_block` is optional, however the optional argument is included and the value is provided with the help of `lookup` function to ensure future extensibility
 
         resource "aws_subnet" "in_secondary_cidr" {
-          vpc_id     = vpc_id
-          cidr_block = each.value.cidr_block
+          vpc_id          = vpc_id
+          cidr_block      = each.value.cidr_block
           ipv6_cidr_block = lookup(each.value, "ipv6_cidr_block", null)
         }
 
@@ -294,7 +294,7 @@ Input variable structure as in good example 2 is preferred over example 1 where 
             },
             {
               name = "Private"
-              az = "eu-est-2b"
+              az   = "eu-est-2b"
               cidr = "192.168.1.0/24"
             }
           ]
