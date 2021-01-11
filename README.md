@@ -15,7 +15,7 @@ Welcome! This repo contains a set of best practices to be followed when contribu
 
 ### 1.1 Terraform Version
 
-* All terraform configuration should be written using the latest version of the Terraform GA release available (0.12.26 as of writing this guide).
+All code should support the latest minor version of the latest Terraform GA release.
 
 <!-- TODO All code should work with the latest three(?) major Terraform releases, requiring all the critical tests to pass as specified in the [Testing](#6-Terraform-Module-Testing) section. Workarounds, if needed, are allowed if they are clearly documented. -->
 
