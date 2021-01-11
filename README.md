@@ -367,9 +367,9 @@ Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
 
 ### 3.3 How to normalise data
 
-* In certain cases our modules will have to support brownfield deployments, in this case we will have both `resource` object and its corresponding `data` object exist in the terraform configuration.
+* In certain cases our modules will have to support brownfield resources (that is, pre-existing resources), in which case we will have the `data` object instead of the `resource` object.
 
-  * Example - Support brownfield deployments where Azure `resource_group` already exists. We can use `try()` function to determine the value for `local.rg` based on the existence of `resource "azurerm_resource_group"` or `data "azurerm_resource_group"`
+  * Example - Support brownfield deployments where Azure `resource_group` already exists. We can use [`try()` function](https://www.terraform.io/docs/configuration/functions/try.html) to determine the value for `local.rg` based on the existence of `resource "azurerm_resource_group"` or `data "azurerm_resource_group"`
 
         resource "azurerm_resource_group" "this" {
           count    = var.existing_rg == false ? 1 : 0
@@ -386,7 +386,25 @@ Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
           rg = try(azurerm_resource_group.this[0], data.azurerm_resource_group.this[0])
         }
 
-Reference - https://www.terraform.io/docs/configuration/functions/try.html
+* When including `data` objects in reusable modules, consider including this note in the documentation:
+
+  > If the code needs to retain Terraform-0.12 and 0.13 compatibility, the input `var.varname` needs to be a static string
+  > and not come from another Terraform object (in a typical case, it should not come from a `resource`). It is allowed for Terraform-0.14+ though.
+
+  * You may omit the note for any input if you test that you can assign it `varname = some_resource.this.field` and then plan/apply succeeds.
+  * Do not assume here that the test succeeding for 0.12 will succeed for 0.13, test both. In this case, incompatibility is likely to show up.
+  * All the inputs that are used inside `data` blocks might be independently impacted:
+
+        data "azurerm_resource" "my_data_object" {
+            name                = var.input1 // possibly impacted
+            resource_group_name = var.input2 // also possibly impacted
+            required_tags       = var.input3 // also possibly impacted
+        }
+
+* As long as our code supports Terraform-0.12.x, avoid creating a `resource` object and later passing it through a `data` object.
+This may cause [a known problem](data_depends_on_and_tf13.md) and thus requires careful testing. It's hard to determine before
+the tests whether the particular code can be ever made compatible with both 0.12 *and* with 0.13 at the same time. The linked page
+proposes workarounds.
 
 ## 4. Terraform Module Structure
 
