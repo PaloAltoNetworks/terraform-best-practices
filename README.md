@@ -1,6 +1,6 @@
-# terraform-best-practices
-### Welcome! This repo contains a set of best practices to be followed when contributing to the Palo Alto Networks terraform modules used by Professional Services.
+# Terraform Best Practices
 
+Welcome! This repo contains a set of best practices to be followed when contributing to the Palo Alto Networks terraform modules used by Professional Services.
 
 ## Table of Contents
 
@@ -11,20 +11,21 @@
 5. [Document Generation](#5-Document-Generation)
 6. [Terraform Module Testing](#6-Terraform-Module-Testing)
 
-
 ## 1. Versioning
 
 ### 1.1 Terraform Version
-* All terraform configuration should be written using the latest version of the Terraform GA release available (0.12.26 as of writing this guide). 
 
-  > Existing Terraform modules should be tested against the latest Terraform releases using a test methodology to be defined later. 
+* All terraform configuration should be written using the latest version of the Terraform GA release available (0.12.26 as of writing this guide).
+
+  > Existing Terraform modules should be tested against the latest Terraform releases using a test methodology to be defined later.
 
 ### 1.1 Module Version
-* All terraform modules should be versioned using Git tags. Git tag name should adhere to the following naming convention 
+
+* All terraform modules should be versioned using Git tags. Git tag name should adhere to the following naming convention
 
 > Major.Minor.Patch => 0.1.0
 
-* Version should be pinned in the root module where the modules are called from using the `ref` argument 
+* Version should be pinned in the root module where the modules are called from using the `ref` argument:
 
       module "bootstrap_bucket" {
         source          = "spring.paloaltonetworks.com/mekanayake/terraform-aws-panfw-bootstrap?ref=0.1.0"
@@ -126,7 +127,6 @@
         policy_arn = aws_iam_policy.bs-policy[0].arn
       }
 
-
 ### 2.3 Intuitive Variable Structure
 
 * It is important to define your variable structure as intuitively as possible for the end user. The input variable can be easily transformed within the module code to meet your requirement later.
@@ -174,7 +174,6 @@
       }
 
 > Input variable structure in Good Example 2 is preferred over Example 1 where possible. In this particular case the user is forced to use unique names for the subnets by using subnet name as the key of the object.
-
 
 ### 2.4 Segment resource creation between multiple resource
 
@@ -284,7 +283,7 @@
 
 * `for_each` only accepts type `set` or `map`, therefore you may have to transform lists to maps when creating multiple resources with `for_each`
 
-  > Example - Transform subnets `list` in to a `map` 
+  > Example - Transform subnets `list` in to a `map`
 
       variable "subnets" {
         default = [
@@ -306,7 +305,6 @@
       }
 
 Reference - https://www.hashicorp.com/blog/hashicorp-terraform-0-12-preview-for-and-for-each/
-
 
 ### 3.2 Flattening nested structures
 
@@ -363,15 +361,13 @@ Reference - https://www.hashicorp.com/blog/hashicorp-terraform-0-12-preview-for-
         destination_cidr_block = each.value.destination_cidr
       } 
 
-
 Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
 
   > This technique will likely result in a minor problem on Terraform 0.12 (`Invalid for_each argument` in specific situations). The first recommendation is **to use Terraform 0.13**. There is [another less-preferred workaround](empty_state_and_tf12.md) available.
 
-
 ### 3.3 How to normalise data
 
-* In certain cases our modules will have to support brownfield deployments, in this case we will have both `resource` and its corresponding `data resource` exist in the terraform configuration. 
+* In certain cases our modules will have to support brownfield deployments, in this case we will have both `resource` and its corresponding `data resource` exist in the terraform configuration.
 
   > Example - Support brownfield deployments where Azure `resource_group` already exists. We can use `try` to determine the value for `local.rg` based on the existence of `resource "azurerm_resource_group" "this"` or `data "azurerm_resource_group" "this"`
 
@@ -389,7 +385,6 @@ Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
       locals {
         rg = try(azurerm_resource_group.this[0], data.azurerm_resource_group.this[0])
       }
-
 
 Reference - https://www.terraform.io/docs/configuration/functions/try.html
 
@@ -421,11 +416,9 @@ We will maintain one mono repo per cloud provider. Three repos, representing AWS
       │   │   ├── versions.tf
       │   ├── tgw-outbound-inspection/
 
-
 ~~### 4.1 Module Template~~
 
 ~~* New modules should be created using a predefined Git template~~
-
 
 ## 5. Document Generation
 
