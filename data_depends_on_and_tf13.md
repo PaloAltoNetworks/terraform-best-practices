@@ -17,8 +17,8 @@ data google_compute_network passthrough {
   name = google_compute_network.initial.name
 
   # tf-0.12: Do not use depends_on!
-  # tf-0.13: Needs depends_on.
-  # tf-0.14: Is okay both with and without depends_on.
+  # tf-0.13: Needs depends_on for this particular case.
+  # tf-0.14: Works well both ways.
   depends_on = [google_compute_network.initial]
 }
 
@@ -36,13 +36,13 @@ The behavior of the example is:
   - Never run `terraform refresh`, it forces a subsequent destroy/recreate of multiple resources. Recover from it by restoring
   the tfstate from backup. No workaround available, which means that the production environment can never be refreshed to fully
   re-read the currently existing cloud resources.
-  - The `apply` will also destroy/recreate of multiple resources.
+  - Every `apply` will also destroy/recreate all the dependant resources.
   - The workaround is to always use: `terraform apply --refresh=false`
   - For planning, use: `terraform plan --refresh=false`
   - Actually tested on 0.12.29.
 
 - For Terraform-0.13 (actually tested 0.13.6), all works well.
-- For Terraform-0.14+, all is good in any variant.
+- For Terraform-0.14+, all is good both ways.
 
 ## Without `depends_on`
 
@@ -59,7 +59,7 @@ You can simply remove the `depends_on` above.
   - The workaround is user-visible and needs to be documented in the corresponding README document.
   - Actually tested on 0.13.6.
 
-- For Terraform-0.14+, all is good with any variant.
+- For Terraform-0.14+, all is good both ways.
 
 ## Root Cause
 
