@@ -404,7 +404,7 @@ Reference - https://www.terraform.io/docs/configuration/functions/flatten.html
 * As long as our code supports Terraform-0.12.x, avoid creating a `resource` object and later passing it through a `data` object.
 This may cause [a known problem](data_depends_on_and_tf13.md) and thus requires careful testing. It's hard to determine before
 the tests whether the particular code can be ever made compatible with both 0.12 *and* with 0.13 at the same time. The linked page
-proposes workarounds.
+proposes workarounds. The 0.14 version is not impacted by this issue.
 
 ## 4. Terraform Module Structure
 
