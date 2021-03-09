@@ -304,7 +304,7 @@ Input variable structure as in good example 2 is preferred over example 1 where 
           # Output variable snippet:
           
           output "virtual_network_ids" {
-            description = "The IDs of the created Virtual Network."
+            description = "The identifiers of the created Virtual Networks."
             value = {
               for k, v in azurerm_network_security_group.this : k => v.id
             }
