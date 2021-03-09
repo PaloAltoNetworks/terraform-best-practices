@@ -277,6 +277,49 @@ Input variable structure as in good example 2 is preferred over example 1 where 
           tags = { "Name" = each.key }
         }
 
+### `2.5 Outputs`
+
+* Terraform output values allow you to export structured data about your resources. You can use this data to configure other parts of your infrastructure with automation tools, or as a data source for another Terraform workspace. Outputs are also necessary to share data from a child module to your root module.
+
+  * Example - output variable for a single resource
+
+        # Output variable snippet:
+        
+        output "virtual_network_id" {
+          description = "The ID of the created Virtual Network."
+          value       = azurerm_virtual_network.this.id
+        }
+        
+        # Output list:
+
+        $ terraform output
+        virtual_network_id = subscriptions/[redacted]/example-vnet
+
+    This constuct is fine when you want to export data about a single resource, but if you are using the `for_each` loop to create multiple resources, the output variable should be updated accordingly to reflect this scenario.
+
+    Indicate what to expect from the output return value. In the example above, the output variable has been defined as `virtual_network_id`, where the `id` suffix suggest that a singular occurrence of a given resource will be presented as the output return value. When expecting multiple resources of the same kind as the output result, both the output variable name and value should be adjusted to reflect those changes, like in the example below. Notice that now we are creating a map which is using the same `key` as the resource, and the `id` as the value. Therefore we changed the output variable name suffix to `ids` to suggest that multiple values should be expected by the user.
+
+  * Example - output variable for multiple resource occurrences
+
+          # Output variable snippet:
+          
+          output "virtual_network_ids" {
+            description = "The identifiers of the created Virtual Networks."
+            value = {
+              for k, v in azurerm_network_security_group.this : k => v.id
+            }
+          }
+
+          # Output list:
+
+          $ terraform output
+          virtual_network_ids = {
+            example_vnet1 = subscriptions/[redacted]/example-vnet1
+            example_vnet2 = subscriptions/[redacted]/example-vnet2
+          }
+
+  Reference - [https://learn.hashicorp.com/tutorials/terraform/outputs](https://learn.hashicorp.com/tutorials/terraform/outputs)
+
 ## 3. Tips and Tricks
 
 ### 3.1 Transform lists to maps
