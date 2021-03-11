@@ -1,2 +1,29 @@
-.vscode
+# This is a minimal list, OK to add things per repo
+*.code-workspace
+*.plan
+*.tfstate*
+# mac specific
 .DS_Store
+.azure/
+.bash_history
+# don't check storage creds into GH
+.boto
+.cache
+#  may contain gcloud files
+.config
+.gitconfig
+.local
+# .netrc contains secrets for service tokens
+.netrc
+.sentinel
+# .ssh dir may contain private keys
+.ssh
+.terrascan
+# TF state stuff
+.terraform
+.terraform.d
+.vscode
+# Palo auth codes
+authcodes
+# Palo specific
+init-cfg.txt
