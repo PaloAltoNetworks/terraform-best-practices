@@ -2,7 +2,7 @@
 *.code-workspace
 *.plan
 *.tfstate
-*.tfstate*
+*.tfstate.*
 # mac specific
 .DS_Store
 .azure/
