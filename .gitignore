@@ -35,3 +35,7 @@ authcodes
 init-cfg.txt
 temp
 tmp
+credentials.json
+
+# Crash log files
+crash.log
