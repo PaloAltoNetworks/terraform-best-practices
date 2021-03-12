@@ -22,6 +22,9 @@
 .terrascan
 # TF state stuff
 .terraform
+.terraformrc
+**/.terraform/*
+terraform.rc
 .terraform.d
 .vscode
 # Palo auth codes
