@@ -1,6 +1,7 @@
 # This is a minimal list, OK to add things per repo
 *.code-workspace
 *.plan
+*.tfstate
 *.tfstate*
 # mac specific
 .DS_Store
