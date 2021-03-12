@@ -27,6 +27,7 @@
 terraform.rc
 .terraform.d
 .vscode
+.idea
 # Palo auth codes
 authcodes
 # Palo specific
