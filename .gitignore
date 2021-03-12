@@ -32,3 +32,5 @@ terraform.rc
 authcodes
 # Palo specific
 init-cfg.txt
+temp
+tmp
