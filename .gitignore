@@ -40,4 +40,9 @@ init-cfg.txt
 temp
 terraform.rc
 tmp
+# Auto variables
+terraform.tfvars
+terraform.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
 
