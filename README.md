@@ -475,6 +475,7 @@ We will maintain one mono repo per cloud provider. Three repos, representing AWS
       │   │   ├── main.tf
       │   │   ├── outputs.tf
       │   │   ├── versions.tf
+      │   │   ├── example.tfvars
       │   ├── tgw-outbound-inspection/
 
 <!-- ## 5. Document Generation -->
