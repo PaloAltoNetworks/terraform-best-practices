@@ -478,6 +478,18 @@ We will maintain one mono repo per cloud provider. Three repos, representing AWS
       │   │   ├── example.tfvars
       │   ├── tgw-outbound-inspection/
 
-<!-- ## 5. Document Generation -->
+## 5. Document Generation
+
+To automate the process of documentation creation we use a [collection of git hooks for Terraform](https://github.com/antonbabenko/pre-commit-terraform) used with the pre-commit framework. 
+
+The [`terraform-docs`](https://github.com/terraform-docs/terraform-docs) utility will insert/update the documentation framed by the markers shown below if they are present in a `README.md` file.
+
+```txt
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+```
+
+This way, sections such as `Requirements`, `Provides`, `Modules`, `Resources`, `Inputs` and `Outputs` don't need to be updated manually every time the module configuration changes - the pre-commit web hook takes care of that task and makes the updates automatically.
 
 <!-- ## 6. Terraform Module Testing -->
