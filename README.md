@@ -131,7 +131,7 @@ All code should support the latest minor version of the latest Terraform GA rele
 
 * It is important to define your variable structure as intuitively as possible for the end user. The input variable can be easily transformed within the module code to meet your requirement later.
 
-  * BAD example, expect disjointed input variables
+  * BAD example, disjoint input variables
 
         module "vpc" {
           source = ...
@@ -175,109 +175,109 @@ All code should support the latest minor version of the latest Terraform GA rele
 
 Input variable structure as in good example 2 is preferred over example 1 where possible. In this particular case the user is forced to use unique names for the subnets by using subnet name as the key of the object.
 
-### 2.4 Segment resource creation between multiple resource
+### 2.4 Segment resource creation between multiple resources
 
-* In some cases it does make sense to create Public Cloud components (ie. virtual machines, Load balancers, Routing tables) using multiple Terraform resources to avoid deletion of the entire component upon minor modifications to the object. A few examples adding or removal of an interface to an EC2 instance destroys and recreates the entire instance. This could be avoided by splitting the network interface and virtual machine creation between two Terraform resources.
+In some cases it does make sense to create Public Cloud components (ie. virtual machines, load balancers, routing tables) using multiple Terraform resources to avoid deletion of the entire component upon minor modifications to the object. As an example, adding/removing an interface to an EC2 instance destroys and recreates the entire instance. Avoid it by using a distinct Terraform resource for the network interface:
 
-  * Example
-
-        # Input variable
-        variable "firewall" {
-          default = {
-            "MOJ-AW2-FW01A" = {
-              interfaces = [
-                {
-                  name            = "mgmt"
-                  subnet_id       = module.vpc.subnets["Management-A"].id
-                  security_groups = [module.vpc.security_groups["SG_Management"].id]
-                  public_ip       = false
-                  index           = 0
-                },
-                {
-                  name              = "public"
-                  subnet_id         = module.vpc.subnets["Public-A"].id
-                  security_groups   = [module.vpc.security_groups["SG_Public"].id]
-                  index             = 1
-                  public_ip         = true
-                  source_dest_check = false
-                },
-                {
-                  name              = "private"
-                  subnet_id         = module.vpc.subnets["Private-A"].id
-                  security_groups   = [module.vpc.security_groups["SG_Private"].id]
-                  index             = 2
-                  source_dest_check = false
-                }
-              ]
+    ```hcl2
+    # Input variable
+    variable "firewall" {
+      default = {
+        "MOJ-AW2-FW01A" = {
+          interfaces = [
+            {
+              name            = "mgmt"
+              subnet_id       = module.vpc.subnets["Management-A"].id
+              security_groups = [module.vpc.security_groups["SG_Management"].id]
+              public_ip       = false
+              index           = 0
+            },
+            {
+              name              = "public"
+              subnet_id         = module.vpc.subnets["Public-A"].id
+              security_groups   = [module.vpc.security_groups["SG_Public"].id]
+              index             = 1
+              public_ip         = true
+              source_dest_check = false
+            },
+            {
+              name              = "private"
+              subnet_id         = module.vpc.subnets["Private-A"].id
+              security_groups   = [module.vpc.security_groups["SG_Private"].id]
+              index             = 2
+              source_dest_check = false
             }
-          }
+          ]
         }
+      }
+    }
 
-        # Flatten variable
-        locals {
-          interfaces = flatten([
-            for fw_name, firewall in var.firewalls : [
-              for if_name, interfaecs in firewall.interfaces : [
-                merge(interfaecs, { "fw_name" = fw_name })
-              ]
-            ]
-          ])
-        }
+    # Flatten variable
+    locals {
+      interfaces = flatten([
+        for fw_name, firewall in var.firewalls : [
+          for if_name, interfaecs in firewall.interfaces : [
+            merge(interfaecs, { "fw_name" = fw_name })
+          ]
+        ]
+      ])
+    }
 
-        # Create instance
-        resource "aws_instance" "this" {
-          for_each                             = var.firewalls
-          disable_api_termination              = false
-          instance_initiated_shutdown_behavior = "stop"
-          ebs_optimized                        = true
-          ami                                  = var.custom_ami != null ? var.custom_ami : data.aws_ami.this.id
-          instance_type                        = var.instance_type
-          key_name                             = var.key_name
-          user_data                            = var.user_data
-          monitoring                           = false
-          iam_instance_profile                 = var.iam_instance_profile
+    # Create instance
+    resource "aws_instance" "this" {
+      for_each                             = var.firewalls
+      disable_api_termination              = false
+      instance_initiated_shutdown_behavior = "stop"
+      ebs_optimized                        = true
+      ami                                  = var.custom_ami != null ? var.custom_ami : data.aws_ami.this.id
+      instance_type                        = var.instance_type
+      key_name                             = var.key_name
+      user_data                            = var.user_data
+      monitoring                           = false
+      iam_instance_profile                 = var.iam_instance_profile
 
-          root_block_device {
-            delete_on_termination = "true"
-          }
+      root_block_device {
+        delete_on_termination = "true"
+      }
 
-          # Attach primary interface to the instance
-          network_interface {
-            device_index         = 0
-            network_interface_id = aws_network_interface.primary[each.key].id
-          }
+      # Attach primary interface to the instance
+      network_interface {
+        device_index         = 0
+        network_interface_id = aws_network_interface.primary[each.key].id
+      }
 
-          tags = { Name = each.key }
-        }
+      tags = { Name = each.key }
+    }
 
-        # Attach interfaces
-        # Create the primary interface (index 0) for the instance
-        resource "aws_network_interface" "primary" {
-          for_each          = { for i in local.interfaces : i.fw_name => i if i.index == 0 }
-          subnet_id         = each.value.subnet_id
-          private_ips       = lookup(each.value, "private_ips", null)
-          security_groups   = lookup(each.value, "security_groups", null)
-          source_dest_check = lookup(each.value, "source_dest_check", false)
-          description       = lookup(each.value, "description", null)
+    # Attach interfaces
+    # Create the primary interface (index 0) for the instance
+    resource "aws_network_interface" "primary" {
+      for_each          = { for i in local.interfaces : i.fw_name => i if i.index == 0 }
+      subnet_id         = each.value.subnet_id
+      private_ips       = lookup(each.value, "private_ips", null)
+      security_groups   = lookup(each.value, "security_groups", null)
+      source_dest_check = lookup(each.value, "source_dest_check", false)
+      description       = lookup(each.value, "description", null)
 
-          tags = { "Name" = each.key }
-        }
+      tags = { "Name" = each.key }
+    }
 
-        resource "aws_network_interface" "this" {
-          for_each          = { for i in local.interfaces : "${i.fw_name}-${i.name}" => i if i.index != 0 }
-          subnet_id         = each.value.subnet_id
-          private_ips       = lookup(each.value, "private_ips", null)
-          security_groups   = lookup(each.value, "security_groups", null)
-          source_dest_check = lookup(each.value, "source_dest_check", false)
-          description       = lookup(each.value, "description", null)
-          attachment {
-            instance     = aws_instance.this[each.value.fw_name].id
-            device_index = lookup(each.value, "index", null)
-          }
-          tags = { "Name" = each.key }
-        }
+    resource "aws_network_interface" "this" {
+      for_each          = { for i in local.interfaces : "${i.fw_name}-${i.name}" => i if i.index != 0 }
+      subnet_id         = each.value.subnet_id
+      private_ips       = lookup(each.value, "private_ips", null)
+      security_groups   = lookup(each.value, "security_groups", null)
+      source_dest_check = lookup(each.value, "source_dest_check", false)
+      description       = lookup(each.value, "description", null)
+      attachment {
+        instance     = aws_instance.this[each.value.fw_name].id
+        device_index = lookup(each.value, "index", null)
+      }
+      tags = { "Name" = each.key }
+    }
+    ```
 
-### `2.5 Outputs`
+### 2.5 Outputs
 
 * Terraform output values allow you to export structured data about your resources. You can use this data to configure other parts of your infrastructure with automation tools, or as a data source for another Terraform workspace. Outputs are also necessary to share data from a child module to your root module.
 
