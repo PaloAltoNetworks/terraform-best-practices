@@ -320,6 +320,77 @@ In some cases it does make sense to create Public Cloud components (ie. virtual 
 
   Reference - [https://learn.hashicorp.com/tutorials/terraform/outputs](https://learn.hashicorp.com/tutorials/terraform/outputs)
 
+### 2.6 Do not use module calls as objects
+
+Do not refer to the entire module call as a one object, such as `x = module.mystuff`. Although it works on `terraform apply`, it propagates deletions unexpectedly on all Terraform versions. Example code which uses `random_pet`, a very simple Hashicorp-provided module which simply generates names, e.g. "relevant-horse":
+
+* producer/main.tf
+
+      ```hcl2
+      resource "random_pet" "unrelated" {
+        # It uses nothing, and is not used by anything. Right?
+      }
+
+      resource "random_pet" "this" {}
+
+      output "id" {
+        value = random_pet.this.id
+      }
+      ```
+
+* main.tf
+
+      ```hcl2
+      module "producer" {
+        source = "./producer"
+      }
+
+      locals {
+        # BAD. Whether you pass the module.producer through a `local`, a `variable`, an `output`, the behavior is not great.
+        module_call_as_object = module.producer
+      }
+
+      resource "random_pet" "main" {
+        prefix = local.module_call_as_object.id
+      }
+      ```
+
+So, what is the problem? When any Terraform run tries to delete the `unrelated` resource, it does delete also `main` resource, despite
+there is no apparent dependency between them:
+
+    ```sh
+    $ terraform apply
+    $ terraform destroy -target module.producer.random_pet.unrelated
+
+    Terraform will perform the following actions:
+
+      # random_pet.main will be destroyed
+      - resource "random_pet" "main" {
+          - id        = "dynamic-basilisk-evident-bat" -> null
+          - length    = 2 -> null
+          - prefix    = "dynamic-basilisk" -> null
+          - separator = "-" -> null
+        }
+
+      # module.producer.random_pet.unrelated will be destroyed
+      - resource "random_pet" "unrelated" {
+          - id        = "relevant-horse" -> null
+          - length    = 2 -> null
+          - separator = "-" -> null
+        }
+    Plan: 0 to add, 0 to change, 2 to destroy.
+    ```
+
+To prevent production code for having such behavior, it would be better to pass around `module.producer.my_output` instead of the entire `module.producer`.
+In this example:
+
+      ```hcl2
+      locals {
+        # GOOD. The module.producer is not passed anywhere as a separate object.
+        module_call_result = module.producer.id
+      }
+      ```
+
 ## 3. Tips and Tricks
 
 ### 3.1 Transform lists to maps
