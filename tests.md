@@ -39,26 +39,26 @@ at all.
 
 ## Test Mainly An Empty Terraform State
 
-The assumption is that we mainly run tests starting from an empty tfstate. For most kinds of tests, maintaining
+The assumption is that we mainly run tests starting from an empty Terraform [state](https://www.terraform.io/docs/language/state/index.html) file. For most kinds of tests, maintaining
 any permanent cloud objects and the associated Terraform state would be quite hard. The main reason is not the cost,
-but the fact that breaking changes in the code tend to destroy/recreate a lot of such cloud objects. Such destroys can
+but the fact that breaking changes in the code tend to destroy/recreate a lot of cloud resources. Such destroys can
 quite often enter a conflict of some kind preventing any further Terraform modification to bring back the well-known
 state for subsequent tests.
 
 ## Test Cases: Simple Or Complex?
 
-Per the previous sections, we resort to using real Apply in tests, and it usually brings in some cloud cost. (The Apply
+Per the previous sections, we resort to using real Apply in tests, and it usually brings in some cloud cost - the Apply
 means the stage after the plan has been already shown to the user, approved, and when it is being deployed to the real
-world.)
+world.
 
-If quick and cheap unit tests were possible, it would be preferable to have each test case just cleanly one thing
+If quick and cheap unit tests were possible, it would be preferable to have each test case responsible for one thing
 and one thing only. Such code is usually readable, small, and clear. However, it remains an open question whether
 to accept the associated cost of one more Apply. In some cases we prefer to sacrifice some readability and perform
 multiple checks after a single Apply run. The reason is that the tests are run more often than they're read by a human.
 
 But if you decide to create such complex test code (one Apply with multiple checks), structure it in a way that shows
 that the checks are in fact independent. Use comments as needed to make that clear. This will reduce
-the ball-of-spaghetti flavor and rescue some readability.
+the ball-of-spaghetti flavor and rescue some readability. And your colleagues will not resent you as much as they used to.
 
 ## Randomization
 
