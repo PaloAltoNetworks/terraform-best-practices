@@ -99,7 +99,7 @@ For inputs, this leads to the code pattern:
 ```hcl2
 resource "random_pet" "this" {}
 
-# The "u_" values are unknown during the `terraform plan`
+# The "u_" values are unknown during the `terraform plan`.
 locals {
   u_true    = length(random_pet.this.id) > 0
   u_false   = length(random_pet.this.id) < 0
@@ -158,9 +158,13 @@ resource "random_pet" "consume_mymodule_third" {
 }
 ```
 
-Similarly, sometimes an output is a `list`, but a user can still be predicted to convert it to a map anyway.
+Similarly, sometimes an output is a `list`, but a user can still be predicted to convert it to a map anyway. Lists
+however are more often used as resource arguments in practice, which are immune to unknown values. For example
+`aws_instance.vpc_security_group_ids` expects a list of strings and works fine whether the list is known or unknown, so
+the behavior is completely different from `for_each`. Map arguments would be immune for the same reason, but they are
+rarely seen in providers except for the ubiquitous `tags` map.
 
-Another commonly seen case is a `bool` output that will be mainly used to create resources in a conditional
+Another common test case is a `bool` output that will be mainly used to create resources in a conditional
 manner using `count`. It also cannot be an unknown value. An example test:
 
 ```hcl2
