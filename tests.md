@@ -104,14 +104,16 @@ locals {
   u_true    = length(random_pet.this.id) > 0
   u_false   = length(random_pet.this.id) < 0
   u_string  = random_pet.this.id
-  u_int     = length(random_pet.this.id)
-  u_cidr    = "10.0.${local.u_int}.0/24"
+  u_number  = length(random_pet.this.id)
+  u_cidr    = "10.0.${local.u_number}.0/24"
 }
 ```
 
-This way you can replace a `true` known bool value with `local.utrue` unknown bool value with ease. (The `local.utrue`
-is always true, because the `length()` is always greater than zero.) This way it is possible to set every input
-of the module to an unknown value in quite a readable way.
+This way you can replace a `true` known bool value with `local.u_true` unknown bool value with ease. (The `local.u_true`
+is always equal to `true`, because the `length()` is always greater than zero. But only the Apply stage determines
+that, the Plan stage assumes it can be either true or false.) Same for other types of inputs: you can replace any string
+by `local.u_string`, and number by `local.u_number`, and so on. This way it is possible to set every input of the module
+to an unknown value in quite a readable way.
 
 This pattern uses `random_pet`, a very simple Hashicorp-provided resource which simply generates names,
 e.g. "relevant-horse". It is very fast, does not communicate to any cloud, and does not incur any cost, but otherwise
@@ -123,10 +125,10 @@ The majority of module's outputs should be consumable by subsequent Terraform co
 exist to be merely displayed to a user when Terraform completes. We can test for some very predictable scenarios of how
 our module's output is consumed by some typical user-side code. It turns out that unknown values impact this too.
 
-The chief scenario is when an output is a `map`. There is not much one can do with a map, except to perform a series
+The main scenario is when an output is a `map`. There is not much one can do with a map, except to perform a series
 of transformations and finally feed it to some `for_each` block at some point. But it's just impossible if the keys
-of the map are an unknown set and not a known set. The output theoretically works but prevents any Lego®-style building.
-(Such map output can still be displayed to users, but that's it.)
+of the map are an unknown set - the Plan will just fail with "Invalid for_each argument". The module theoretically works
+but prevents any Lego®-style building. (Such a map output can still be displayed to users, but that's it.)
 
 ```hcl2
 module "mymodule" {
