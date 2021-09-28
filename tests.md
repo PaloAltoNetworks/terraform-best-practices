@@ -1,6 +1,6 @@
 # Testing of Terraform Modules Explained
 
-## Are Unit Tests Viable?
+## Unit Tests Do Not Use Apply
 
 A useful definition of a unit test is one which mainly spends its run time in the code that we own, and very little
 time in the code owned by other organizations or teams. There are other definitions, but the usefulness of this
@@ -45,20 +45,20 @@ but the fact that breaking changes in the code tend to destroy/recreate a lot of
 quite often enter a conflict of some kind preventing any further Terraform modification, thus preventing the recovery
 of the well-known state for subsequent tests.
 
-## Test Cases: Simple Or Complex?
+## Integration Tests: Simple Or Complex
 
-Per the previous sections, we resort to using real Apply in tests, and it usually brings in some cloud cost - the Apply
-means the stage after the plan has been already shown to the user, approved, and when it is being deployed to the real
-world.
+The tests which use Apply usually bring in some cloud cost - the Apply is the stage after the plan has been already
+shown to the user, approved, and when it is being deployed to the real world.
 
-If quick and cheap unit tests were possible, it would be preferable to have each test case responsible for one thing
-and one thing only. Such code is usually readable, small, and clear. However, it remains an open question whether
-to accept the associated cost of one more Apply. In some cases we prefer to sacrifice some readability and perform
-multiple checks after a single Apply run. The reason is that the tests are run more often than they're read by a human.
+For quick and cheap unit tests, it is preferable to have each test case responsible for one thing and one thing only.
+Such code is usually readable, small, and clear. On the other hand, when considering integration tests, it remains
+an open question whether to accept the associated cost of one more Apply. In some cases we prefer to sacrifice some
+readability and perform multiple checks after a single Apply run. After all the tests are run more often than
+they're read by a human.
 
 But if you decide to create such complex test code (one Apply with multiple checks), structure it in a way that shows
-that the checks are in fact independent. Use comments as needed to make that clear. This will reduce
-the ball-of-spaghetti flavor and rescue some readability. And your colleagues will not resent you as much as they used to.
+that the checks are in fact _independent_. Use comments as needed to make that point clear. This will reduce
+the ball-of-spaghetti flavor and rescue some readability for your colleagues and for the future version of you.
 
 ## Randomization
 
@@ -74,7 +74,7 @@ replicate the same pseudo-random sequence again.
 
 ## The Unknown Value Pitfall
 
-There is a pitfall which makes Terraform tests quite different in structure and scope from tests in other
+There is a pitfall which makes Terraform unit tests quite different in structure and scope from tests in other
 languages. The pitfall is: Terraform internally marks all values as either [unknown or known](https://github.com/zclconf/go-cty/blob/e5d3f1507f80d88b60e58c4644f462636f400c98/cty/value.go#L40-L52),
 and _unknown values behave differently than known values_ during the Plan stage. Terraform does not make this fact
 visible upfront, so it is up to a developer to remember to consider it when creating test cases.
@@ -91,6 +91,10 @@ The `random_integer.this.hex` is an example of an unknown value, because it does
 The code under test can fail the Plan stage for an unknown input although it passes exactly the same test for a known
 value. The opposite is not true: any code that works for unknown values seems to always work for known
 values as well. The idea is then to forcefully put unknown values in as many inputs as possible.
+
+Since the distinction apparently becomes irrelevant after the Plan succeeds, this category of tests are written to only
+execute the Plan stage; the Apply never runs. This greatly simplifies the setup code, because the module under test
+does not need any real dependencies and all the unknown inputs may use dummy values.
 
 ### Inputs
 
