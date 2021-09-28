@@ -42,8 +42,8 @@ at all.
 The assumption is that we mainly run tests starting from an empty Terraform [state](https://www.terraform.io/docs/language/state/index.html) file. For most kinds of tests, maintaining
 any permanent cloud objects and the associated Terraform state would be quite hard. The main reason is not the cost,
 but the fact that breaking changes in the code tend to destroy/recreate a lot of cloud resources. Such destroys can
-quite often enter a conflict of some kind preventing any further Terraform modification to bring back the well-known
-state for subsequent tests.
+quite often enter a conflict of some kind preventing any further Terraform modification, thus preventing the recovery
+of the well-known state for subsequent tests.
 
 ## Test Cases: Simple Or Complex?
 
@@ -128,7 +128,7 @@ our module's output is consumed by some typical user-side code. It turns out tha
 The main scenario is when an output is a `map`. There is not much one can do with a map, except to perform a series
 of transformations and finally feed it to some `for_each` block at some point. But it's just impossible if the keys
 of the map are an unknown set - the Plan will just fail with "Invalid for_each argument". The module theoretically works
-but prevents any Lego®-style building. (Such a map output can still be displayed to users, but that's it.)
+but prevents any Lego®-style building. (Such a map output can still be displayed to users however.)
 
 ```hcl2
 module "mymodule" {
@@ -141,34 +141,75 @@ module "mymodule" {
 
 resource "random_pet" "consume_mymodule_my_map_output" {
   for_each = module.mymodule.my_map_output
-
-  prefix = each.key
 }
 
 resource "random_pet" "consume_mymodule_second" {
   for_each = module.mymodule.second
-
-  prefix = each.key
 }
 
 resource "random_pet" "consume_mymodule_third" {
   for_each = module.mymodule.third
-
-  prefix = each.key
 }
 ```
 
-Similarly, sometimes an output is a `list`, but a user can still be predicted to convert it to a map anyway. Lists
+On Terraform 0.13 and above condense that to a single block:
+
+```hcl2
+resource "random_pet" "consume_maps" {
+  for_each = merge(
+    module.mymodule.my_map_output,
+    module.mymodule.second,
+    module.mymodule.third,
+
+    module.mymodule_alt.my_map_output,
+    module.mymodule_alt.second,
+    module.mymodule_alt.third,
+  )
+}
+```
+
+The `_alt` above refers to an alternate call to the same module, with a different set of known inputs. For example,
+if the `vpc` module has the input `create_vpc` which is true by default, an alternate call would have it false.
+This would test Plan on multiple execution paths within the same code.
+
+Similarly, sometimes an output is a list, but a user can still be predicted to convert it to a map anyway. Lists
 however are more often used as resource arguments in practice, which are immune to unknown values. For example
 `aws_instance.vpc_security_group_ids` expects a list of strings and works fine whether the list is known or unknown, so
-the behavior is completely different from `for_each`. Map arguments would be immune for the same reason, but they are
-rarely seen in providers except for the ubiquitous `tags` map.
+it has completely different behavior than `for_each`. (Map arguments would be immune for the same reason, but they are
+rarely seen in providers except for the ubiquitous `tags` maps.) How to consume a list:
 
-Another common test case is a `bool` output that will be mainly used to create resources in a conditional
+```hcl2
+resource "random_pet" "consume_mymodule_my_list" {
+  for_each = { for v in module.mymodule.my_list : v => true }
+}
+```
+
+On Terraform 0.13 and above condense multiple outputs to a single block:
+
+```hcl2
+resource "random_pet" "consume_lists" {
+  for_each = merge(
+    { for v in module.mymodule.my_list : v => true },
+    { for v in module.mymodule.my_second_list : v => true },
+    { for v in module.mymodule_alt.my_list : v => true },
+    { for v in module.mymodule_alt.my_second_list : v => true },
+  )
+}
+```
+
+Another imaginable test case is a `bool` output which will be mainly used to create resources in a conditional
 manner using `count`. It also cannot be an unknown value. An example test:
 
 ```hcl2
 resource "random_pet" "consume_mymodule_bool_output" {
   count = module.mymodule.bool_output ? 1 : 0
+}
+
+resource "random_pet" "consume_bools" {
+  count = contains([
+    module.mymodule.bool_output1,
+    module.mymodule.bool_output2,
+    module.mymodule.bool_output3,
+  ], false) ? 1 : 0
 }
 ```
