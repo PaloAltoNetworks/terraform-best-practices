@@ -179,7 +179,7 @@ This would test Plan on multiple execution paths within the same code.
 Similarly, sometimes an output is a list, but a user can still be predicted to convert it to a map anyway. Lists
 however are more often used as resource arguments in practice, which are immune to unknown values. For example
 `aws_instance.vpc_security_group_ids` expects a list of strings and works fine whether the list is known or unknown, so
-it has completely different behavior than `for_each` (map arguments would be immune for the same reason, but they are rarely seen in providers except for the ubiquitous `tags` maps). 
+it has completely different behavior than `for_each` (map arguments would be immune for the same reason, but they are rarely seen in providers except for the ubiquitous `tags` maps).
 
 How to consume a list:
 
