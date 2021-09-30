@@ -126,13 +126,13 @@ does not bring any real functionality here - the code above would be usable even
 ### Outputs
 
 The majority of module's outputs should be consumable by subsequent Terraform code. Only the minority of outputs
-exist to be merely displayed to a user when Terraform completes. We can test for some very predictable scenarios of how
+exist to be merely displayed to a user when a Terraform run completes. We can test for some very predictable scenarios of how
 our module's output is consumed by some typical user-side code. It turns out that unknown values impact this too.
 
 The main scenario is when an output is a `map`. There is not much one can do with a map, except to perform a series
 of transformations and finally feed it to some `for_each` block at some point. But it's just impossible if the keys
 of the map are an unknown set - the Plan will just fail with "Invalid for_each argument". The module theoretically works
-but prevents any Lego®-style building. (Such a map output can still be displayed to users however.)
+but prevents any Lego®-style building (such a map output can still be displayed to users however).
 
 ```hcl2
 module "mymodule" {
@@ -179,8 +179,9 @@ This would test Plan on multiple execution paths within the same code.
 Similarly, sometimes an output is a list, but a user can still be predicted to convert it to a map anyway. Lists
 however are more often used as resource arguments in practice, which are immune to unknown values. For example
 `aws_instance.vpc_security_group_ids` expects a list of strings and works fine whether the list is known or unknown, so
-it has completely different behavior than `for_each`. (Map arguments would be immune for the same reason, but they are
-rarely seen in providers except for the ubiquitous `tags` maps.) How to consume a list:
+it has completely different behavior than `for_each` (map arguments would be immune for the same reason, but they are rarely seen in providers except for the ubiquitous `tags` maps). 
+
+How to consume a list:
 
 ```hcl2
 resource "random_pet" "consume_mymodule_my_list" {
