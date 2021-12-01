@@ -8,7 +8,7 @@ Welcome! This repo contains a set of best practices to be followed when contribu
 2. [Coding Practices](#2-coding-practices)
 3. [Tips and Tricks](#3-tips-and-tricks)
 4. [Terraform Module Structure](#4-Terraform-Module-Structure)
-<!-- TODO 5. [Document Generation](#5-Document-Generation) -->
+5. [Document Generation](#5-Document-Generation)
 <!-- TODO 6. [Terraform Module Testing](#6-Terraform-Module-Testing) -->
 
 ## 1. Versioning
