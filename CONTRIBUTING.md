@@ -22,7 +22,7 @@ Contributions are welcome across the entire project:
 
 1. Clone the repo from your personal namespace.
 
-   `git clone https://github.com/{username}/tterraform-aws-vmseries-modules.git`
+   `git clone https://github.com/{username}/terraform-aws-vmseries-modules.git`
    Ensure that `{username}` is _your_ user name.
 
    ![clone](docs/images/clone.png)
