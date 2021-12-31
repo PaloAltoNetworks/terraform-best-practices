@@ -563,4 +563,6 @@ The [`terraform-docs`](https://github.com/terraform-docs/terraform-docs) utility
 
 This way, sections such as `Requirements`, `Provides`, `Modules`, `Resources`, `Inputs` and `Outputs` don't need to be updated manually every time the module configuration changes - the pre-commit web hook takes care of that task and makes the updates automatically.
 
-<!-- ## 6. Terraform Module Testing -->
+## 6. Terraform Module Testing
+
+See [Terraform Module Testing](./tests.md).
