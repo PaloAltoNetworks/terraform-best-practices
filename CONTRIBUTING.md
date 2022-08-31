@@ -37,7 +37,7 @@ Contributions are welcome across the entire project:
 1. Make the desired changes and commit to your local repository.
 
 1. Run the `pre-commit` script. See the [tools](#tools) section for more information.
-      *NOTE* If making changes that will update the Terraform docs, this will need to be run twice.
+   > *NOTE* If making changes that will update the Terraform docs, this will need to be run twice.
 
 1. Push changes to _your_ repository
 
