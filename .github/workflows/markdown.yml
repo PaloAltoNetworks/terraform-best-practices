@@ -8,9 +8,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
     - name: markdownlint-cli
-      uses: nosborn/github-action-markdown-cli@v1.1.1
+      uses: nosborn/github-action-markdown-cli@9fc95163471d6460c35cccad13645912aaa25d5f # v1.1.1
       with:
         files: .
         config_file: ".markdownlint.json"
