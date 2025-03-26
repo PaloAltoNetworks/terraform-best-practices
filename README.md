@@ -524,6 +524,15 @@ proposes workarounds. The 0.14 version is not impacted by this issue.
 
 We will maintain one mono repo per cloud provider. Three repos, representing AWS, Azure and GCP, as we kick off our efforts.
 
+## Module naming convention
+We will use [kebab-case](https://www.theserverside.com/definition/Kebab-case) when naming the modules
+
+Examples
+```
+transit-gateway
+gateway-loadbalancer
+```
+
       ├── README.md <- Documentation explaining the purpose of this mono repo
       ├── LICENSE.md <- Palo Alto Networks Script Software Agreement
       ├── modules/
