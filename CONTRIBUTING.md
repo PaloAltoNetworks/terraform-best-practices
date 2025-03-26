@@ -25,8 +25,6 @@ Contributions are welcome across the entire project:
    `git clone https://github.com/{username}/terraform-aws-vmseries-modules.git`
    Ensure that `{username}` is _your_ user name.
 
-   ![clone](docs/images/clone.png)
-
 1. Add the source repository as an upsteam.
 
    `git remote add upstream https://github.com/PaloAltoNetworks/terraform-aws-vmseries-modules.git`
@@ -39,7 +37,7 @@ Contributions are welcome across the entire project:
 1. Make the desired changes and commit to your local repository.
 
 1. Run the `pre-commit` script. See the [tools](#tools) section for more information.
-   *NOTE* If making changes that will update the Terraform docs, this will need to be run twice.
+   > *NOTE* If making changes that will update the Terraform docs, this will need to be run twice.
 
 1. Push changes to _your_ repository
 
